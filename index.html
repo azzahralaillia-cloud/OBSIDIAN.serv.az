@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lingua180 - 180-Day English Learning & Research Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            accent: '#06b6d4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar & glassmorphism styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 9999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(71, 85, 105, 1);
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand & Tagline -->
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/20">
+                    L180
+                </div>
+                <div>
+                    <h1
+                        class="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+                        Lingua180
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Conversational English to Research Academic
+                        Mastery</p>
+                </div>
+            </div>
+
+            <!-- Global Settings Bar -->
+            <div class="flex items-center gap-3 text-sm">
+                <!-- Mode Selector -->
+                <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+                    <button onclick="setStudyMode('30m')" id="btn-mode-30m"
+                        class="px-2.5 py-1 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white">
+                        30m
+                    </button>
+                    <button onclick="setStudyMode('1h')" id="btn-mode-1h"
+                        class="px-2.5 py-1 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white">
+                        1h
+                    </button>
+                    <button onclick="setStudyMode('2h')" id="btn-mode-2h"
+                        class="px-2.5 py-1 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white">
+                        2h
+                    </button>
+                </div>
+
+                <!-- Bilingual Translation Toggle -->
+                <button id="trans-toggle" onclick="toggleTranslation()"
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-medium transition-all">
+                    <i class="fa-solid fa-language text-cyan-400 text-sm"></i>
+                    <span id="trans-toggle-text" class="hidden md:inline">Terjemahan ID: OFF</span>
+                    <span class="w-2 h-2 rounded-full bg-slate-600" id="trans-indicator"></span>
+                </button>
+
+                <!-- Audio Speed Selector -->
+                <button id="tts-speed-btn" onclick="toggleTtsSpeed()"
+                    class="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-mono text-slate-300">
+                    <i class="fa-solid fa-gauge text-indigo-400 mr-1"></i> <span id="tts-speed-label">1.0x</span>
+                </button>
+
+                <!-- Streak Display -->
+                <div
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold">
+                    <i class="fa-solid fa-fire text-amber-500"></i>
+                    <span id="streak-counter">1</span> Hari
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Sidebar: Navigation & Phase Progress -->
+        <aside class="lg:col-span-3 flex flex-col gap-5">
+            <!-- Day Selector & Quick Search -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs uppercase font-bold text-slate-400 tracking-wider">Kurikulum Hari</h2>
+                    <span id="current-day-badge"
+                        class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold">
+                        Hari 1/180
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="changeDay(-1)"
+                        class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-sm">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <select id="day-select" onchange="jumpToDay(this.value)"
+                        class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 font-mono">
+                        <!-- Populated by JS -->
+                    </select>
+                    <button onclick="changeDay(1)"
+                        class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-sm">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Phase Progress Bar -->
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex justify-between text-xs">
+                        <span id="phase-title-label" class="text-slate-400 font-medium truncate">Phase 1:
+                            Essentials</span>
+                        <span id="overall-progress-pct" class="text-cyan-400 font-mono font-semibold">1%</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800/50">
+                        <div id="overall-progress-bar"
+                            class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 w-[1%] transition-all duration-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Navigation Tabs -->
+            <nav class="glass-panel p-2 rounded-2xl flex flex-col gap-1">
+                <button onclick="switchTab('curriculum')" id="nav-curriculum"
+                    class="nav-btn active flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+                    <i class="fa-solid fa-book-open text-sm w-4"></i>
+                    <span>Modul Hari Ini</span>
+                </button>
+                <button onclick="switchTab('timer')" id="nav-timer"
+                    class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-stopwatch text-sm w-4 text-emerald-400"></i>
+                    <span>Real-Time Step Timer</span>
+                </button>
+                <button onclick="switchTab('flashcards')" id="nav-flashcards"
+                    class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-clone text-sm w-4 text-amber-400"></i>
+                    <span>Flashcard Vault</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz"
+                    class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-circle-question text-sm w-4 text-purple-400"></i>
+                    <span>Kuis Harian</span>
+                </button>
+                <button onclick="switchTab('notes')" id="nav-notes"
+                    class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-all">
+                    <i class="fa-solid fa-pen-to-square text-sm w-4 text-rose-400"></i>
+                    <span>Catatan & Jurnal</span>
+                </button>
+            </nav>
+
+            <!-- Phase Roadmap Overview -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-col gap-2.5 text-xs">
+                <h3 class="font-bold text-slate-300 uppercase tracking-wider text-[10px]">Peta Jalan 180 Hari</h3>
+                <div class="space-y-2">
+                    <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between"
+                        id="roadmap-p1">
+                        <div>
+                            <p class="font-semibold text-slate-200">Fase 1 (1-45)</p>
+                            <p class="text-[10px] text-slate-400">Daily Essentials</p>
+                        </div>
+                        <span class="text-[10px] font-mono text-cyan-400">45 Hari</span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between"
+                        id="roadmap-p2">
+                        <div>
+                            <p class="font-semibold text-slate-200">Fase 2 (46-90)</p>
+                            <p class="text-[10px] text-slate-400">Intermediate Fluency</p>
+                        </div>
+                        <span class="text-[10px] font-mono text-cyan-400">45 Hari</span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between"
+                        id="roadmap-p3">
+                        <div>
+                            <p class="font-semibold text-slate-200">Fase 3 (91-135)</p>
+                            <p class="text-[10px] text-slate-400">Academic & Research</p>
+                        </div>
+                        <span class="text-[10px] font-mono text-cyan-400">45 Hari</span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between"
+                        id="roadmap-p4">
+                        <div>
+                            <p class="font-semibold text-slate-200">Fase 4 (136-180)</p>
+                            <p class="text-[10px] text-slate-400">Scholarly Rhetoric</p>
+                        </div>
+                        <span class="text-[10px] font-mono text-cyan-400">45 Hari</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Viewport -->
+        <main class="lg:col-span-9 flex flex-col gap-6">
+
+            <!-- TAB 1: CURRICULUM VIEW (5 PILLARS) -->
+            <section id="tab-curriculum" class="tab-content flex flex-col gap-6">
+
+                <!-- Header Banner for Current Day -->
+                <div
+                    class="glass-panel p-6 rounded-3xl relative overflow-hidden border border-slate-800 bg-gradient-to-br from-slate-900 via-indigo-950/30 to-slate-900">
+                    <div
+                        class="absolute -right-10 -bottom-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none">
+                    </div>
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span id="day-phase-tag"
+                                    class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                    Phase 1
+                                </span>
+                                <span id="day-theme-tag" class="text-xs text-slate-400 font-medium">Daily
+                                    Communication</span>
+                            </div>
+                            <h2 id="day-title" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                                Greeting People & Self Introductions
+                            </h2>
+                            <p id="day-subtitle" class="text-sm text-slate-400 mt-1 max-w-2xl">
+                                Learn how to open conversations naturally and construct professional, engaging
+                                introductions.
+                            </p>
+                        </div>
+
+                        <!-- Completion Toggle Button -->
+                        <button id="mark-complete-btn" onclick="toggleDayCompletion()"
+                            class="px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-2 transition-all shadow-md">
+                            <i class="fa-regular fa-circle-check text-slate-400 text-sm" id="complete-icon"></i>
+                            <span id="complete-text">Tandai Selesai</span>
+                        </button>
+                    </div>
+
+                    <!-- Step Timer Bar inside Day View -->
+                    <div
+                        class="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-2 text-slate-300">
+                            <i class="fa-solid fa-clock text-cyan-400"></i>
+                            <span>Mode Belajar Terpilih: <strong id="active-mode-label"
+                                    class="text-cyan-300 font-mono">30 Menit</strong></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-400">Pembagian per Pilar:</span>
+                            <span id="time-alloc-badge"
+                                class="px-2 py-0.5 rounded-md bg-slate-800 font-mono text-slate-200">6m Reading | 6m
+                                Vocab | 6m Gram | 6m Write | 6m Speak</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5 PILLAR NAVIGATION TABS -->
+                <div
+                    class="flex overflow-x-auto gap-2 p-1.5 bg-slate-900/80 rounded-2xl border border-slate-800 text-xs no-scrollbar">
+                    <button onclick="setSubTab('reading')" id="pillar-tab-reading"
+                        class="pillar-tab active flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-md">
+                        <i class="fa-solid fa-book-open text-sm"></i>
+                        <span>Reading</span>
+                    </button>
+                    <button onclick="setSubTab('vocab')" id="pillar-tab-vocab"
+                        class="pillar-tab flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-font text-sm"></i>
+                        <span>Vocabulary</span>
+                    </button>
+                    <button onclick="setSubTab('grammar')" id="pillar-tab-grammar"
+                        class="pillar-tab flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cubes text-sm"></i>
+                        <span>Grammar</span>
+                    </button>
+                    <button onclick="setSubTab('writing')" id="pillar-tab-writing"
+                        class="pillar-tab flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-pen-nib text-sm"></i>
+                        <span>Writing</span>
+                    </button>
+                    <button onclick="setSubTab('speaking')" id="pillar-tab-speaking"
+                        class="pillar-tab flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-microphone text-sm"></i>
+                        <span>Speaking</span>
+                    </button>
+                </div>
+
+                <div id="pillar-timer-bar"
+                    class="glass-panel p-4 rounded-2xl flex items-center justify-between border border-cyan-500/20 bg-cyan-950/10">
+                    <div class="flex items-center gap-3">
+                        <div class="relative w-12 h-12 flex items-center justify-center">
+                            <svg class="w-12 h-12">
+                                <circle class="text-slate-800" stroke-width="3" stroke="currentColor" fill="transparent"
+                                    r="20" cx="24" cy="24" />
+                                <circle id="pillar-timer-ring" class="text-cyan-400 progress-ring-circle"
+                                    stroke-width="3" stroke-dasharray="125.6" stroke-dashoffset="0"
+                                    stroke-linecap="round" stroke="currentColor" fill="transparent" r="20" cx="24"
+                                    cy="24" />
+                            </svg>
+                            <span id="pillar-timer-digits"
+                                class="absolute font-mono text-xs font-bold text-cyan-300">06:00</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-200" id="pillar-timer-label">Timer Pilar: Reading</p>
+                            <p class="text-[11px] text-slate-400">Target Alokasi Real-Time Hari Ini</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="togglePillarTimer()" id="btn-pillar-play"
+                            class="px-3.5 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-cyan-500/20">
+                            <i class="fa-solid fa-play text-xs"></i> <span id="btn-pillar-play-text">Mulai</span>
+                        </button>
+                        <button onclick="resetPillarTimer()"
+                            class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs transition-all">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PILLAR CONTENT SUB-PANELS -->
+                <!-- 1. Reading Sub-Panel -->
+                <div id="sub-reading" class="sub-panel flex flex-col gap-4">
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-book text-indigo-400"></i> Reading Passage
+                            </h3>
+                            <button onclick="readAloudText('reading-body-text')"
+                                class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-indigo-300 font-medium flex items-center gap-1.5">
+                                <i class="fa-solid fa-volume-high text-xs"></i> Dengarkan
+                            </button>
+                        </div>
+
+                        <div id="reading-body-text"
+                            class="text-slate-200 text-sm leading-relaxed space-y-3 font-normal">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <div id="reading-id-box"
+                            class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-slate-400 leading-relaxed space-y-2 hidden">
+                            <p class="font-bold text-cyan-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-language"></i> Terjemahan Bahasa Indonesia:
+                            </p>
+                            <div id="reading-id-text">
+                                <!-- ID translation populated dynamic -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Vocabulary Sub-Panel -->
+                <div id="sub-vocab" class="sub-panel flex flex-col gap-4 hidden">
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-spell-check text-amber-400"></i> Key Vocabulary
+                            </h3>
+                            <span class="text-xs text-slate-400">Klik ikon audio untuk mendengarkan pengucapan</span>
+                        </div>
+
+                        <div id="vocab-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Vocabulary cards injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Grammar Sub-Panel -->
+                <div id="sub-grammar" class="sub-panel flex flex-col gap-4 hidden">
+                    <div class="glass-panel p-6 rounded-3xl space-y-5">
+                        <div class="border-b border-slate-800 pb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-cubes text-purple-400"></i> Formula & Tata Bahasa
+                            </h3>
+                        </div>
+
+                        <!-- Rule Box -->
+                        <div class="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 space-y-2">
+                            <p id="grammar-title-text" class="text-sm font-bold text-indigo-300">Present Simple
+                                Structure</p>
+                            <p id="grammar-formula-text"
+                                class="text-xs font-mono bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 text-cyan-300">
+                                Subject + Verb 1 (s/es) + Complement
+                            </p>
+                            <p id="grammar-exp-text" class="text-xs text-slate-300 leading-relaxed pt-1">
+                                Used for habit, general facts, and daily routines.
+                            </p>
+                            <div id="grammar-exp-id"
+                                class="text-xs text-slate-400 italic pt-1 border-t border-slate-800 hidden">
+                                <!-- ID translation -->
+                            </div>
+                        </div>
+
+                        <!-- Interactive Sentence Builder Exercise -->
+                        <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <h4
+                                    class="text-xs uppercase tracking-wider font-bold text-cyan-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-puzzle-piece"></i> Interactive Sentence Builder
+                                </h4>
+                                <button onclick="resetSentenceBuilder()"
+                                    class="text-[11px] text-slate-400 hover:text-slate-200">Reset</button>
+                            </div>
+                            <p class="text-xs text-slate-300">Susun kata-kata berikut menjadi kalimat bahasa Inggris
+                                yang tepat:</p>
+                            <p id="sb-prompt-id" class="text-xs text-amber-300/80 italic font-medium"></p>
+
+                            <!-- Target dropzone -->
+                            <div id="sb-dropzone"
+                                class="min-h-[50px] p-3 rounded-xl bg-slate-950 border-2 border-dashed border-slate-800 flex flex-wrap gap-2 items-center">
+                                <span id="sb-placeholder" class="text-xs text-slate-600 italic">Klik kata di bawah untuk
+                                    menyusun kalimat...</span>
+                            </div>
+
+                            <!-- Words Bank -->
+                            <div id="sb-words-bank" class="flex flex-wrap gap-2 pt-2">
+                                <!-- Word pills populated JS -->
+                            </div>
+
+                            <div id="sb-feedback" class="text-xs font-semibold hidden p-2.5 rounded-xl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Writing Sub-Panel -->
+                <div id="sub-writing" class="sub-panel flex flex-col gap-4 hidden">
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <div class="border-b border-slate-800 pb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-pen-nib text-rose-400"></i> Daily Writing Prompt
+                            </h3>
+                            <p id="writing-prompt-text" class="text-xs text-slate-300 mt-1">
+                                Write a short paragraph introducing yourself and your main academic research interest.
+                            </p>
+                            <p id="writing-prompt-id" class="text-xs text-slate-500 italic mt-0.5 hidden">
+                                Write translation...
+                            </p>
+                        </div>
+
+                        <!-- Writing Text Area -->
+                        <div class="space-y-2">
+                            <textarea id="writing-input" rows="6" oninput="updateWordCount()"
+                                placeholder="Tulis jawaban bahasa Inggris Anda di sini..."
+                                class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-rose-500 transition-all font-sans"></textarea>
+                            <div class="flex justify-between items-center text-xs text-slate-500">
+                                <span id="word-count-label">0 kata</span>
+                                <button onclick="evaluateWriting()"
+                                    class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-rose-600/20">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Evaluasi Teks
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Writing Feedback Box -->
+                        <div id="writing-eval-result"
+                            class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hidden">
+                            <div class="flex items-center gap-2 text-xs font-bold text-cyan-400">
+                                <i class="fa-solid fa-robot"></i> Lingua AI Evaluator Feedback
+                            </div>
+                            <div id="writing-eval-content" class="text-xs text-slate-300 leading-relaxed space-y-2">
+                                <!-- Results -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Speaking Sub-Panel -->
+                <div id="sub-speaking" class="sub-panel flex flex-col gap-4 hidden">
+                    <div class="glass-panel p-6 rounded-3xl space-y-5">
+                        <div class="border-b border-slate-800 pb-3 flex justify-between items-center">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-microphone-lines text-emerald-400"></i> Speaking & Shadowing
+                                Practice
+                            </h3>
+                            <button onclick="readAloudText('speaking-script-text')"
+                                class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+                                <i class="fa-solid fa-play"></i> Putar Audio Skrip
+                            </button>
+                        </div>
+
+                        <!-- Script Box -->
+                        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold uppercase tracking-wider text-emerald-400">Skrip Shadowing
+                                Harian:</p>
+                            <p id="speaking-script-text" class="text-sm text-slate-200 leading-relaxed font-medium">
+                                "Hello! My name is Maya, and I am excited to embark on this academic journey."
+                            </p>
+                            <p id="speaking-script-id" class="text-xs text-slate-400 italic hidden">
+                                "Halo! Nama saya Maya, dan saya sangat senang..."
+                            </p>
+                        </div>
+
+                        <!-- Voice Practice Recorder UI -->
+                        <div
+                            class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col items-center justify-center gap-3 text-center">
+                            <div
+                                class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl shadow-lg">
+                                <i class="fa-solid fa-microphone" id="mic-icon"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-200" id="speech-status-label">Tekan tombol di
+                                    bawah untuk latihan berbicara</p>
+                                <p class="text-[11px] text-slate-500">Bicarakan skrip di atas secara nyaring untuk
+                                    melatih artikulasi & intonasi</p>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button onclick="toggleSpeechRecording()" id="btn-toggle-mic"
+                                    class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-emerald-600/20">
+                                    <i class="fa-solid fa-circle text-xs text-rose-300 animate-pulse" id="rec-dot"
+                                        style="display:none;"></i>
+                                    <span id="mic-btn-text">Mulai Rekam Suara</span>
+                                </button>
+                            </div>
+
+                            <!-- Recognized Text Transcript -->
+                            <div id="speech-transcript-box"
+                                class="w-full text-left p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono hidden">
+                                <span class="text-slate-500 block mb-1">Transkrip Suara Anda:</span>
+                                <span id="speech-transcript-text">...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 2: REAL-TIME STEP TIMER DEDICATED VIEW -->
+            <section id="tab-timer" class="tab-content flex flex-col gap-6 hidden">
+                <div class="glass-panel p-6 rounded-3xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-stopwatch text-emerald-400"></i> Real-Time Step Timer Module
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Lacak durasi setiap pilar pembelajaran secara real-time dengan hitungan mundur otomatis dan
+                            visualisasi progress.
+                        </p>
+                    </div>
+
+                    <!-- Main Timer Visualization -->
+                    <div class="flex flex-col items-center justify-center py-8 gap-6">
+                        <div class="relative w-64 h-64 flex items-center justify-center">
+                            <svg class="w-full h-full">
+                                <circle class="text-slate-900" stroke-width="10" stroke="currentColor"
+                                    fill="transparent" r="100" cx="128" cy="128" />
+                                <circle id="main-timer-ring" class="text-emerald-400 progress-ring-circle"
+                                    stroke-width="10" stroke-dasharray="628.3" stroke-dashoffset="0"
+                                    stroke-linecap="round" stroke="currentColor" fill="transparent" r="100" cx="128"
+                                    cy="128" />
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="main-timer-digits"
+                                    class="font-mono text-5xl font-extrabold text-white tracking-wider">06:00</span>
+                                <span id="main-timer-pillar-title"
+                                    class="text-xs font-semibold text-emerald-400 uppercase tracking-widest mt-2">Pilar:
+                                    Reading</span>
+                            </div>
+                        </div>
+
+                        <!-- Timer Controls -->
+                        <div class="flex items-center gap-4">
+                            <button onclick="togglePillarTimer()" id="main-timer-play-btn"
+                                class="px-8 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/25">
+                                <i class="fa-solid fa-play"></i> <span id="main-timer-play-text">Mulai Timer</span>
+                            </button>
+                            <button onclick="resetPillarTimer()"
+                                class="px-5 py-3 rounded-2xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-semibold text-sm transition-all">
+                                <i class="fa-solid fa-rotate-right mr-1.5"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Auto Advance Toggle & Pillar Quick Selector -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-800 pt-6">
+                        <div
+                            class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-200">Auto-Advance Pilar</p>
+                                <p class="text-[11px] text-slate-400">Otomatis pindah ke pilar berikutnya saat timer
+                                    selesai</p>
+                            </div>
+                            <input type="checkbox" id="auto-advance-check" checked
+                                class="w-5 h-5 rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0">
+                        </div>
+
+                        <div
+                            class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-200">Notifikasi Suara Bel</p>
+                                <p class="text-[11px] text-slate-400">Bunyi bel saat waktu habis</p>
+                            </div>
+                            <button onclick="playChimeSound()"
+                                class="px-3 py-1.5 rounded-xl bg-slate-800 text-xs text-slate-300 hover:text-white">
+                                <i class="fa-solid fa-bell mr-1 text-amber-400"></i> Tes Suara
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: FLASHCARD VAULT -->
+            <section id="tab-flashcards" class="tab-content flex flex-col gap-6 hidden">
+                <div class="glass-panel p-6 rounded-3xl space-y-6">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-clone text-amber-400"></i> Flashcard Vault (Kartu Memori)
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-1">
+                                Perkaya kosakata Anda melalui metode Flashcard interaktif dari materi harian yang telah
+                                dipelajari.
+                            </p>
+                        </div>
+                        <div
+                            class="text-xs font-mono text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20">
+                            Total Vocab: <span id="flashcard-total-count">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Flip Flashcard -->
+                    <div class="flex flex-col items-center justify-center py-6">
+                        <div id="flashcard-element" onclick="flipFlashcard()"
+                            class="w-full max-w-md h-64 bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 rounded-3xl border border-slate-800 p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:border-amber-500/50 shadow-xl relative group">
+                            <span
+                                class="absolute top-4 right-4 text-[10px] font-mono text-slate-500 uppercase tracking-widest"
+                                id="fc-word-class">Noun</span>
+                            <span class="absolute top-4 left-4 text-[10px] font-mono text-amber-400"
+                                id="fc-counter-badge">1 / 5</span>
+
+                            <div id="fc-front" class="space-y-2">
+                                <h3 id="fc-word-en" class="text-3xl font-extrabold text-white tracking-tight">Articulate
+                                </h3>
+                                <p class="text-xs text-slate-400 italic">Klik untuk melihat arti & contoh kalimat</p>
+                            </div>
+
+                            <div id="fc-back" class="space-y-3 hidden">
+                                <h4 id="fc-word-id" class="text-xl font-bold text-amber-300">Pandai Berbicara /
+                                    Memperjelas</h4>
+                                <p id="fc-example-sentence" class="text-xs text-slate-300 italic max-w-xs">
+                                    "She was able to articulate her ideas clearly during the thesis defense."
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Flashcard Nav Controls -->
+                        <div class="flex items-center gap-4 mt-6">
+                            <button onclick="prevFlashcard()"
+                                class="p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <button onclick="markFlashcardMastered()"
+                                class="px-4 py-2.5 rounded-2xl bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 font-semibold text-xs hover:bg-emerald-600/30">
+                                <i class="fa-solid fa-check mr-1.5"></i> Kuasai
+                            </button>
+                            <button onclick="nextFlashcard()"
+                                class="p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: DAILY QUIZ -->
+            <section id="tab-quiz" class="tab-content flex flex-col gap-6 hidden">
+                <div class="glass-panel p-6 rounded-3xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question text-purple-400"></i> Kuis Evaluasi Harian
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Uji pemahaman Anda terhadap materi Reading, Vocabulary, dan Grammar hari ini.
+                        </p>
+                    </div>
+
+                    <div id="quiz-container" class="space-y-6">
+                        <!-- Questions injected dynamically -->
+                    </div>
+
+                    <button onclick="submitDailyQuiz()"
+                        class="w-full py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition-all shadow-lg shadow-purple-600/20">
+                        Kirim Jawaban Kuis
+                    </button>
+                </div>
+            </section>
+
+            <!-- TAB 5: NOTES & JOURNAL -->
+            <section id="tab-notes" class="tab-content flex flex-col gap-6 hidden">
+                <div class="glass-panel p-6 rounded-3xl space-y-4">
+                    <div class="border-b border-slate-800 pb-4">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-rose-400"></i> Catatan & Jurnal Belajar Harian
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Tuliskan refleksi, ungkapan baru, atau kendala yang Anda temui selama sesi belajar hari ini.
+                        </p>
+                    </div>
+
+                    <textarea id="daily-notes-input" rows="8" placeholder="Tuliskan catatan pribadi Anda di sini..."
+                        class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-rose-500 font-sans"></textarea>
+
+                    <div class="flex justify-end gap-3">
+                        <button onclick="saveDailyNotes()"
+                            class="px-6 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-all shadow-md">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Catatan
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. DATASET: COMPLETE 180-DAY CURRICULUM GENERATOR
+           ========================================================================== */
+
+        // Generate comprehensive dataset for 180 Days across 4 Phases
+        const CURRICULUM_DATA = [];
+
+        const phases = [
+            {id: 1, name: "Phase 1: Daily Essentials & Conversations", days: [1, 45]},
+            {id: 2, name: "Phase 2: Intermediate Fluency & Complex Structures", days: [46, 90]},
+            {id: 3, name: "Phase 3: Academic English & Research Basics", days: [91, 135]},
+            {id: 4, name: "Phase 4: Sophisticated Research & Scholarly Rhetoric", days: [136, 180]}
+        ];
+
+        // Helper topics for curriculum generation
+        const sampleTopics = [
+            {title: "Greeting People & Introductions", theme: "Daily Life", rule: "Present Simple Verb 'To Be'", prompt: "Introduce yourself and your research area."},
+            {title: "Ordering Food & Dining Etiquette", theme: "Socializing", rule: "Polite Requests with Modal Verbs", prompt: "Describe your favorite meal."},
+            {title: "Describing Daily Routines", theme: "Daily Life", rule: "Adverbs of Frequency", prompt: "Detail your typical morning routine."},
+            {title: "Asking for & Giving Directions", theme: "Navigation", rule: "Imperative Sentences", prompt: "Explain how to reach your campus library."},
+            {title: "Expressing Nuanced Opinions", theme: "Debate", rule: "Phrasal Verbs for Stance", prompt: "Share your perspective on AI in education."},
+            {title: "Summarizing Academic Papers", theme: "Research", rule: "Passive Voice in Academic Writing", prompt: "Summarize a research topic you recently read."},
+            {title: "Interpreting Data & Trends", theme: "Analytics", rule: "Comparative & Superlative Forms", prompt: "Describe a trend in global education statistics."},
+            {title: "Formulating Hypotheses", theme: "Methodology", rule: "Conditional Sentences (Type 1 & 2)", prompt: "Formulate a tentative research hypothesis."},
+            {title: "Hedging Academic Claims", theme: "Scholarly Rhetoric", rule: "Modal Verbs for Tentative Language", prompt: "Write a tentative research conclusion."},
+            {title: "Peer-Review & Constructive Feedback", theme: "Academic Peer Review", rule: "Subjunctive Mood & Formal Transitions", prompt: "Draft a polite critique of a methodology section."}
+        ];
+
+        for (let day = 1; day <= 180; day++) {
+            let phaseId = 1;
+            if (day > 45 && day <= 90) phaseId = 2;
+            else if (day > 90 && day <= 135) phaseId = 3;
+            else if (day > 136) phaseId = 4;
+
+            const topicIndex = (day - 1) % sampleTopics.length;
+            const topic = sampleTopics[topicIndex];
+
+            CURRICULUM_DATA.push({
+                day: day,
+                phase: phaseId,
+                phaseTitle: phases[phaseId - 1].name,
+                title: `Day ${day}: ${topic.title}`,
+                theme: topic.theme,
+                reading: {
+                    en: `Reading passage for Day ${day}. Academic inquiry requires consistent dedication. Effective learners actively connect fundamental concepts with real-world applications. By reading daily, you expand your conceptual vocabulary and master complex syntactic structures necessary for academic publishing.`,
+                    id: `Teks bacaan untuk Hari ke-${day}. Penyelidikan akademis membutuhkan dedikasi yang konsisten. Pembelajar yang efektif secara aktif menghubungkan konsep-konsep dasar dengan penerapan di dunia nyata. Dengan membaca setiap hari, Anda memperluas kosakata konseptual dan menguasai struktur sintaksis kompleks yang diperlukan untuk publikasi akademis.`
+                },
+                vocab: [
+                    {word: "Articulate", class: "Verb / Adj", id: "Pandai berbicara / Memperjelas", ex: "She was able to articulate her research objectives clearly."},
+                    {word: "Empirical", class: "Adjective", id: "Empiris / Berdasarkan bukti", ex: "The study is based on empirical data collected over two years."},
+                    {word: "Hypothesis", class: "Noun", id: "Hipotesis", ex: "The preliminary hypothesis was confirmed by experimental findings."}
+                ],
+                grammar: {
+                    title: topic.rule,
+                    formula: "Subject + Verb / Auxiliary + Complement",
+                    expEn: `Focus on mastering the correct usage of ${topic.rule} in both spoken and written contexts.`,
+                    expId: `Fokus pada penguasaan penggunaan ${topic.rule} dalam konteks lisan maupun tulisan.`,
+                    sentenceBuilder: {
+                        promptId: "Susun kalimat: Saya membaca jurnal ilmiah setiap hari.",
+                        words: ["I", "read", "scientific", "journals", "every", "single", "day."],
+                        correct: "I read scientific journals every single day."
+                    }
+                },
+                writing: {
+                    promptEn: topic.prompt,
+                    promptId: `Tuliskan tanggapan Anda mengenai: ${topic.prompt}`
+                },
+                speaking: {
+                    scriptEn: `"Consistency is the key to mastering academic research English."`,
+                    scriptId: `"Konsistensi adalah kunci untuk menguasai bahasa Inggris penelitian akademis."`
+                },
+                quiz: [
+                    {
+                        q: "Which word means 'based on observation or experience'?",
+                        options: ["Hypothetical", "Empirical", "Abstract", "Theoretical"],
+                        answer: 1,
+                        exp: "'Empirical' refers to knowledge derived from direct observation or experimentation."
+                    },
+                    {
+                        q: "What is the primary purpose of 'hedging' in academic writing?",
+                        options: ["To express certainty", "To sound tentative and objective", "To confuse readers", "To sound informal"],
+                        answer: 1,
+                        exp: "Hedging uses cautious language to avoid making over-generalized claims."
+                    },
+                    {
+                        q: "Choose the correct verb form: 'The data _____ collected yesterday.'",
+                        options: ["were", "was", "is", "are"],
+                        answer: 1,
+                        exp: "In standard academic context, 'data' can take singular 'was' or plural 'were' depending on style, 'was' fits standard singular usage here."
+                    }
+                ]
+            });
+        }
+
+        /* ==========================================================================
+           2. STATE MANAGEMENT & LOCAL STORAGE
+           ========================================================================== */
+
+        let currentState = {
+            currentDay: 1,
+            studyMode: '30m', // '30m', '1h', '2h'
+            showTranslation: false,
+            ttsSpeed: 1.0,
+            activeTab: 'curriculum',
+            activePillar: 'reading', // 'reading', 'vocab', 'grammar', 'writing', 'speaking'
+            completedDays: [],
+            streak: 1,
+            userNotes: {},
+            flashcardsMastered: []
+        };
+
+        // Load persisted state if exists
+        function loadSavedState() {
+            const saved = localStorage.getItem('lingua180_state');
+            if (saved) {
+                try {
+                    currentState = {...currentState, ...JSON.parse(saved)};
+                } catch (e) {console.error("Could not parse saved state");}
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('lingua180_state', JSON.stringify(currentState));
+        }
+
+        /* ==========================================================================
+           3. DYNAMIC TIMER ENGINE
+           ========================================================================== */
+
+        // Mode time allocations (in seconds) per pillar
+        const TIMER_ALLOCATIONS = {
+            '30m': {reading: 360, vocab: 360, grammar: 360, writing: 360, speaking: 360}, // 6m each = 30m total
+            '1h': {reading: 720, vocab: 720, grammar: 720, writing: 720, speaking: 720}, // 12m each = 60m total
+            '2h': {reading: 1500, vocab: 1200, grammar: 1500, writing: 1500, speaking: 1500} // 25m, 20m, 25m, 25m, 25m
+        };
+
+        let timerInterval = null;
+        let timerIsRunning = false;
+        let timerSecondsRemaining = 360;
+        let timerTotalSeconds = 360;
+
+        function setStudyMode(mode) {
+            currentState.studyMode = mode;
+            saveState();
+            updateModeUI();
+            resetPillarTimer();
+        }
+
+        function updateModeUI() {
+            ['30m', '1h', '2h'].forEach(m => {
+                const btn = document.getElementById(`btn-mode-${m}`);
+                if (m === currentState.studyMode) {
+                    btn.className = "px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-md";
+                } else {
+                    btn.className = "px-2.5 py-1 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white";
+                }
+            });
+
+            const modeLabels = {'30m': '30 Menit', '1h': '1 Jam', '2h': '2 Jam'};
+            const modeBadges = {
+                '30m': '6m Reading | 6m Vocab | 6m Gram | 6m Write | 6m Speak',
+                '1h': '12m Reading | 12m Vocab | 12m Gram | 12m Write | 12m Speak',
+                '2h': '25m Reading | 20m Vocab | 25m Gram | 25m Write | 25m Speak'
+            };
+
+            document.getElementById('active-mode-label').innerText = modeLabels[currentState.studyMode];
+            document.getElementById('time-alloc-badge').innerText = modeBadges[currentState.studyMode];
+        }
+
+        function resetPillarTimer() {
+            pausePillarTimer();
+            const alloc = TIMER_ALLOCATIONS[currentState.studyMode][currentState.activePillar];
+            timerSecondsRemaining = alloc;
+            timerTotalSeconds = alloc;
+            updateTimerDisplay();
+        }
+
+        function togglePillarTimer() {
+            if (timerIsRunning) {
+                pausePillarTimer();
+            } else {
+                startPillarTimer();
+            }
+        }
+
+        function startPillarTimer() {
+            timerIsRunning = true;
+            document.getElementById('btn-pillar-play-text').innerText = "Jeda";
+            document.getElementById('main-timer-play-text').innerText = "Jeda Timer";
+            document.getElementById('btn-pillar-play').firstElementChild.className = "fa-solid fa-pause text-xs";
+
+            timerInterval = setInterval(() => {
+                if (timerSecondsRemaining > 0) {
+                    timerSecondsRemaining--;
+                    updateTimerDisplay();
+                } else {
+                    pausePillarTimer();
+                    playChimeSound();
+
+                    const autoAdvance = document.getElementById('auto-advance-check').checked;
+                    if (autoAdvance) {
+                        advanceToNextPillar();
+                    }
+                }
+            }, 1000);
+        }
+
+        function pausePillarTimer() {
+            timerIsRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('btn-pillar-play-text').innerText = "Mulai";
+            document.getElementById('main-timer-play-text').innerText = "Mulai Timer";
+            document.getElementById('btn-pillar-play').firstElementChild.className = "fa-solid fa-play text-xs";
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSecondsRemaining / 60);
+            const secs = timerSecondsRemaining % 60;
+            const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+            document.getElementById('pillar-timer-digits').innerText = formatted;
+            document.getElementById('main-timer-digits').innerText = formatted;
+
+            // Update Progress SVG Rings
+            const pct = timerSecondsRemaining / timerTotalSeconds;
+
+            // Small ring (r=20, circumference = ~125.6)
+            const smallOffset = 125.6 * (1 - pct);
+            document.getElementById('pillar-timer-ring').style.strokeDashoffset = smallOffset;
+
+            // Main ring (r=100, circumference = ~628.3)
+            const mainOffset = 628.3 * (1 - pct);
+            document.getElementById('main-timer-ring').style.strokeDashoffset = mainOffset;
+        }
+
+        function advanceToNextPillar() {
+            const pillars = ['reading', 'vocab', 'grammar', 'writing', 'speaking'];
+            const idx = pillars.indexOf(currentState.activePillar);
+            if (idx < pillars.length - 1) {
+                setSubTab(pillars[idx + 1]);
+                resetPillarTimer();
+                startPillarTimer();
+            }
+        }
+
+        function playChimeSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3); // A5
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.8);
+            } catch (e) {console.log("AudioContext blocked or unsupported");}
+        }
+
+        /* ==========================================================================
+           4. NAVIGATION & SUB-PANEL CONTROLLER
+           ========================================================================== */
+
+        function switchTab(tabId) {
+            currentState.activeTab = tabId;
+            saveState();
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-all";
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "nav-btn active flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-indigo-600/20 text-indigo-400 border border-indigo-500/30";
+            }
+
+            if (tabId === 'flashcards') renderFlashcardVault();
+            if (tabId === 'quiz') renderDailyQuiz();
+            if (tabId === 'notes') renderNotesTab();
+        }
+
+        function setSubTab(pillar) {
+            currentState.activePillar = pillar;
+            saveState();
+
+            document.querySelectorAll('.sub-panel').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`sub-${pillar}`).classList.remove('hidden');
+
+            document.querySelectorAll('.pillar-tab').forEach(btn => {
+                btn.className = "pillar-tab flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2";
+            });
+            const activePillarBtn = document.getElementById(`pillar-tab-${pillar}`);
+            if (activePillarBtn) {
+                activePillarBtn.className = "pillar-tab active flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-md";
+            }
+
+            document.getElementById('pillar-timer-label').innerText = `Timer Pilar: ${pillar.toUpperCase()}`;
+            document.getElementById('main-timer-pillar-title').innerText = `Pilar: ${pillar.toUpperCase()}`;
+            resetPillarTimer();
+        }
+
+        function jumpToDay(dayNum) {
+            currentState.currentDay = parseInt(dayNum);
+            saveState();
+            renderCurrentDay();
+        }
+
+        function changeDay(delta) {
+            let target = currentState.currentDay + delta;
+            if (target >= 1 && target <= 180) {
+                jumpToDay(target);
+            }
+        }
+
+        function toggleTranslation() {
+            currentState.showTranslation = !currentState.showTranslation;
+            saveState();
+            updateTranslationUI();
+        }
+
+        function updateTranslationUI() {
+            const btnText = document.getElementById('trans-toggle-text');
+            const indicator = document.getElementById('trans-indicator');
+
+            if (currentState.showTranslation) {
+                btnText.innerText = "Terjemahan ID: ON";
+                indicator.className = "w-2 h-2 rounded-full bg-cyan-400 animate-pulse";
+
+                // Show all translation boxes
+                document.getElementById('reading-id-box').classList.remove('hidden');
+                document.getElementById('grammar-exp-id').classList.remove('hidden');
+                document.getElementById('writing-prompt-id').classList.remove('hidden');
+                document.getElementById('speaking-script-id').classList.remove('hidden');
+            } else {
+                btnText.innerText = "Terjemahan ID: OFF";
+                indicator.className = "w-2 h-2 rounded-full bg-slate-600";
+
+                // Hide translation boxes
+                document.getElementById('reading-id-box').classList.add('hidden');
+                document.getElementById('grammar-exp-id').classList.add('hidden');
+                document.getElementById('writing-prompt-id').classList.add('hidden');
+                document.getElementById('speaking-script-id').classList.add('hidden');
+            }
+        }
+
+        function toggleTtsSpeed() {
+            if (currentState.ttsSpeed === 1.0) currentState.ttsSpeed = 0.75;
+            else currentState.ttsSpeed = 1.0;
+            saveState();
+            document.getElementById('tts-speed-label').innerText = `${currentState.ttsSpeed}x`;
+        }
+
+        /* ==========================================================================
+           5. RENDER CURRENT DAY CURRICULUM
+           ========================================================================== */
+
+        function renderCurrentDay() {
+            const data = CURRICULUM_DATA[currentState.currentDay - 1];
+            if (!data) return;
+
+            // Top Header & Select
+            document.getElementById('current-day-badge').innerText = `Hari ${data.day}/180`;
+            document.getElementById('day-select').value = data.day;
+            document.getElementById('day-phase-tag').innerText = `Phase ${data.phase}`;
+            document.getElementById('day-theme-tag').innerText = data.theme;
+            document.getElementById('day-title').innerText = data.title;
+            document.getElementById('phase-title-label').innerText = data.phaseTitle;
+
+            // Reading
+            document.getElementById('reading-body-text').innerText = data.reading.en;
+            document.getElementById('reading-id-text').innerText = data.reading.id;
+
+            // Vocabulary Cards
+            const vocabContainer = document.getElementById('vocab-list-container');
+            vocabContainer.innerHTML = '';
+            data.vocab.forEach(v => {
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2 relative group hover:border-amber-500/30 transition-all";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="text-base font-bold text-white">${v.word}</h4>
+                            <span class="text-[10px] font-mono text-amber-400">${v.class}</span>
+                        </div>
+                        <button onclick="speakText('${v.word}')" class="p-2 rounded-xl bg-slate-800 text-amber-400 hover:bg-slate-700 transition-all">
+                            <i class="fa-solid fa-volume-high text-xs"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">${v.id}</p>
+                    <p class="text-xs text-slate-400 italic bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">"${v.ex}"</p>
+                `;
+                vocabContainer.appendChild(card);
+            });
+
+            // Grammar
+            document.getElementById('grammar-title-text').innerText = data.grammar.title;
+            document.getElementById('grammar-formula-text').innerText = data.grammar.formula;
+            document.getElementById('grammar-exp-text').innerText = data.grammar.expEn;
+            document.getElementById('grammar-exp-id').innerText = data.grammar.expId;
+            initSentenceBuilder(data.grammar.sentenceBuilder);
+
+            // Writing
+            document.getElementById('writing-prompt-text').innerText = data.writing.promptEn;
+            document.getElementById('writing-prompt-id').innerText = data.writing.promptId;
+            document.getElementById('writing-input').value = '';
+            document.getElementById('writing-eval-result').classList.add('hidden');
+
+            // Speaking
+            document.getElementById('speaking-script-text').innerText = data.speaking.scriptEn;
+            document.getElementById('speaking-script-id').innerText = data.speaking.scriptId;
+
+            // Completion state
+            updateCompletionButtonUI();
+            updateOverallProgress();
+            updateTranslationUI();
+        }
+
+        /* ==========================================================================
+           6. INTERACTIVE SENTENCE BUILDER ENGINE
+           ========================================================================== */
+
+        let sbCurrentWords = [];
+        let sbTargetCorrect = "";
+
+        function initSentenceBuilder(sbData) {
+            document.getElementById('sb-prompt-id').innerText = sbData.promptId;
+            sbTargetCorrect = sbData.correct;
+            sbCurrentWords = [];
+
+            // Shuffle words for bank
+            const shuffled = [...sbData.words].sort(() => Math.random() - 0.5);
+
+            const bank = document.getElementById('sb-words-bank');
+            bank.innerHTML = '';
+            shuffled.forEach((word, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `sb-word-${idx}`;
+                btn.className = "px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-indigo-600 text-slate-200 text-xs font-mono transition-all border border-slate-700";
+                btn.innerText = word;
+                btn.onclick = () => selectWordForBuilder(word, idx);
+                bank.appendChild(btn);
+            });
+
+            renderDropzone();
+            document.getElementById('sb-feedback').classList.add('hidden');
+        }
+
+        function selectWordForBuilder(word, idx) {
+            sbCurrentWords.push(word);
+            document.getElementById(`sb-word-${idx}`).style.display = 'none';
+            renderDropzone();
+            checkSentenceBuilder();
+        }
+
+        function renderDropzone() {
+            const dropzone = document.getElementById('sb-dropzone');
+            dropzone.innerHTML = '';
+
+            if (sbCurrentWords.length === 0) {
+                dropzone.innerHTML = `<span id="sb-placeholder" class="text-xs text-slate-600 italic">Klik kata di bawah untuk menyusun kalimat...</span>`;
+                return;
+            }
+
+            sbCurrentWords.forEach((word, index) => {
+                const pill = document.createElement('span');
+                pill.className = "px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-mono flex items-center gap-1 cursor-pointer hover:bg-indigo-500";
+                pill.innerHTML = `${word} <i class="fa-solid fa-xmark text-[10px]"></i>`;
+                pill.onclick = () => removeWordFromBuilder(index);
+                dropzone.appendChild(pill);
+            });
+        }
+
+        function removeWordFromBuilder(index) {
+            sbCurrentWords.splice(index, 1);
+            renderDropzone();
+            // Re-show words in bank
+            const data = CURRICULUM_DATA[currentState.currentDay - 1].grammar.sentenceBuilder;
+            initSentenceBuilder(data);
+        }
+
+        function resetSentenceBuilder() {
+            const data = CURRICULUM_DATA[currentState.currentDay - 1].grammar.sentenceBuilder;
+            initSentenceBuilder(data);
+        }
+
+        function checkSentenceBuilder() {
+            const constructed = sbCurrentWords.join(" ");
+            const feedback = document.getElementById('sb-feedback');
+
+            if (constructed === sbTargetCorrect) {
+                feedback.className = "text-xs font-semibold p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                feedback.innerText = "Sempurna! Kalimat tersusun dengan tepat.";
+                feedback.classList.remove('hidden');
+            }
+        }
+
+        /* ==========================================================================
+           7. WRITING EVALUATOR ENGINE
+           ========================================================================== */
+
+        function updateWordCount() {
+            const text = document.getElementById('writing-input').value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            document.getElementById('word-count-label').innerText = `${words} kata`;
+        }
+
+        function evaluateWriting() {
+            const text = document.getElementById('writing-input').value.trim();
+            const resBox = document.getElementById('writing-eval-result');
+            const content = document.getElementById('writing-eval-content');
+
+            if (!text) {
+                alert("Harap masukkan tulisan Anda terlebih dahulu.");
+                return;
+            }
+
+            resBox.classList.remove('hidden');
+
+            // AI Analysis Simulation
+            content.innerHTML = `
+                <p><strong>Analisis Struktur & Tata Bahasa:</strong> Tulisan Anda memiliki kejelasan yang baik.</p>
+                <p><strong>Rekomendasi Akademis (Academic Polish):</strong> Coba gunakan kata hubung transisi seperti <em>"Furthermore"</em> atau <em>"Consequently"</em> untuk meningkatkan kohesi antar paragraf.</p>
+                <div class="p-2.5 rounded-xl bg-slate-950 text-cyan-300 font-mono text-[11px] border border-slate-800">
+                    Saran Versi Akademis: "${text} Furthermore, this inquiry provides essential perspectives."
+                </div>
+            `;
+        }
+
+        /* ==========================================================================
+           8. SPEAKING & SPEECH RECOGNITION / TTS
+           ========================================================================== */
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = currentState.ttsSpeed;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function readAloudText(elementId) {
+            const txt = document.getElementById(elementId).innerText;
+            speakText(txt);
+        }
+
+        let isRecording = false;
+        let recognition = null;
+
+        function toggleSpeechRecording() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Pengenalan suara tidak didukung oleh browser Anda. Gunakan Google Chrome.");
+                return;
+            }
+
+            if (!isRecording) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => {
+                    isRecording = true;
+                    document.getElementById('rec-dot').style.display = 'inline-block';
+                    document.getElementById('mic-btn-text').innerText = "Merekam... Klik untuk Berhenti";
+                    document.getElementById('speech-status-label').innerText = "Mendengarkan... Ucapkan skrip sekarang";
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('speech-transcript-box').classList.remove('hidden');
+                    document.getElementById('speech-transcript-text').innerText = `"${transcript}"`;
+                };
+
+                recognition.onend = () => {
+                    isRecording = false;
+                    document.getElementById('rec-dot').style.display = 'none';
+                    document.getElementById('mic-btn-text').innerText = "Mulai Rekam Suara";
+                    document.getElementById('speech-status-label').innerText = "Rekaman selesai! Periksa transkrip Anda di bawah";
+                };
+
+                recognition.start();
+            } else {
+                if (recognition) recognition.stop();
+            }
+        }
+
+        /* ==========================================================================
+           9. FLASHCARD VAULT MODULE
+           ========================================================================== */
+
+        let currentFcIndex = 0;
+        let activeFlashcards = [];
+
+        function renderFlashcardVault() {
+            // Aggregate vocabulary up to current day
+            activeFlashcards = [];
+            for (let i = 0; i < currentState.currentDay; i++) {
+                CURRICULUM_DATA[i].vocab.forEach(v => activeFlashcards.push(v));
+            }
+
+            document.getElementById('flashcard-total-count').innerText = activeFlashcards.length;
+            currentFcIndex = 0;
+            showFlashcard(currentFcIndex);
+        }
+
+        function showFlashcard(index) {
+            if (activeFlashcards.length === 0) return;
+            const item = activeFlashcards[index];
+
+            document.getElementById('fc-counter-badge').innerText = `${index + 1} / ${activeFlashcards.length}`;
+            document.getElementById('fc-word-class').innerText = item.class;
+            document.getElementById('fc-word-en').innerText = item.word;
+            document.getElementById('fc-word-id').innerText = item.id;
+            document.getElementById('fc-example-sentence').innerText = `"${item.ex}"`;
+
+            // Reset card to front
+            document.getElementById('fc-front').classList.remove('hidden');
+            document.getElementById('fc-back').classList.add('hidden');
+        }
+
+        function flipFlashcard() {
+            const front = document.getElementById('fc-front');
+            const back = document.getElementById('fc-back');
+            front.classList.toggle('hidden');
+            back.classList.toggle('hidden');
+        }
+
+        function nextFlashcard() {
+            if (currentFcIndex < activeFlashcards.length - 1) {
+                currentFcIndex++;
+                showFlashcard(currentFcIndex);
+            }
+        }
+
+        function prevFlashcard() {
+            if (currentFcIndex > 0) {
+                currentFcIndex--;
+                showFlashcard(currentFcIndex);
+            }
+        }
+
+        function markFlashcardMastered() {
+            nextFlashcard();
+        }
+
+        /* ==========================================================================
+           10. DAILY QUIZ MODULE
+           ========================================================================== */
+
+        function renderDailyQuiz() {
+            const data = CURRICULUM_DATA[currentState.currentDay - 1];
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            data.quiz.forEach((q, qIdx) => {
+                const box = document.createElement('div');
+                box.className = "p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3";
+
+                let optionsHtml = '';
+                q.options.forEach((opt, oIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500/40 cursor-pointer text-xs text-slate-300">
+                            <input type="radio" name="quiz-q-${qIdx}" value="${oIdx}" class="text-purple-500 focus:ring-0">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+
+                box.innerHTML = `
+                    <p class="text-sm font-bold text-white">${qIdx + 1}. ${q.q}</p>
+                    <div class="space-y-2">${optionsHtml}</div>
+                    <div id="quiz-exp-${qIdx}" class="text-xs text-indigo-300 bg-indigo-950/30 p-2.5 rounded-xl border border-indigo-500/20 hidden">
+                        <strong>Penjelasan:</strong> ${q.exp}
+                    </div>
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function submitDailyQuiz() {
+            const data = CURRICULUM_DATA[currentState.currentDay - 1];
+            let score = 0;
+
+            data.quiz.forEach((q, qIdx) => {
+                const selected = document.querySelector(`input[name="quiz-q-${qIdx}"]:checked`);
+                const expBox = document.getElementById(`quiz-exp-${qIdx}`);
+                expBox.classList.remove('hidden');
+
+                if (selected && parseInt(selected.value) === q.answer) {
+                    score++;
+                }
+            });
+
+            alert(`Kuis Selesai! Skor Anda: ${score} / ${data.quiz.length}`);
+        }
+
+        /* ==========================================================================
+           11. JOURNAL & NOTES MODULE
+           ========================================================================== */
+
+        function renderNotesTab() {
+            const dayKey = `day_${currentState.currentDay}`;
+            document.getElementById('daily-notes-input').value = currentState.userNotes[dayKey] || '';
+        }
+
+        function saveDailyNotes() {
+            const text = document.getElementById('daily-notes-input').value;
+            const dayKey = `day_${currentState.currentDay}`;
+            currentState.userNotes[dayKey] = text;
+            saveState();
+            alert("Catatan harian berhasil disimpan!");
+        }
+
+        /* ==========================================================================
+           12. PROGRESS TRACKING & DAY COMPLETION
+           ========================================================================== */
+
+        function toggleDayCompletion() {
+            const day = currentState.currentDay;
+            const idx = currentState.completedDays.indexOf(day);
+
+            if (idx === -1) {
+                currentState.completedDays.push(day);
+            } else {
+                currentState.completedDays.splice(idx, 1);
+            }
+
+            saveState();
+            updateCompletionButtonUI();
+            updateOverallProgress();
+        }
+
+        function updateCompletionButtonUI() {
+            const isCompleted = currentState.completedDays.includes(currentState.currentDay);
+            const btn = document.getElementById('mark-complete-btn');
+            const icon = document.getElementById('complete-icon');
+            const text = document.getElementById('complete-text');
+
+            if (isCompleted) {
+                btn.className = "px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2 transition-all shadow-md shadow-emerald-600/20";
+                icon.className = "fa-solid fa-circle-check text-white text-sm";
+                text.innerText = "Selesai Dipelajari";
+            } else {
+                btn.className = "px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-2 transition-all shadow-md";
+                icon.className = "fa-regular fa-circle-check text-slate-400 text-sm";
+                text.innerText = "Tandai Selesai";
+            }
+        }
+
+        function updateOverallProgress() {
+            const completedCount = currentState.completedDays.length;
+            const pct = Math.round((completedCount / 180) * 100);
+
+            document.getElementById('overall-progress-pct').innerText = `${pct}%`;
+            document.getElementById('overall-progress-bar').style.width = `${pct}%`;
+            document.getElementById('streak-counter').innerText = currentState.completedDays.length || 1;
+        }
+
+        function populateDaySelector() {
+            const select = document.getElementById('day-select');
+            select.innerHTML = '';
+            for (let i = 1; i <= 180; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.innerText = `Hari ${i}`;
+                select.appendChild(opt);
+            }
+        }
+
+        /* ==========================================================================
+           13. INITIALIZATION ON WINDOW LOAD
+           ========================================================================== */
+
+        window.onload = function () {
+            populateDaySelector();
+            loadSavedState();
+            updateModeUI();
+            renderCurrentDay();
+            resetPillarTimer();
+        };
+    </script>
+</body>
+
+</html>
